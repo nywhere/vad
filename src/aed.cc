@@ -14,6 +14,10 @@
 #include "pitch_est.h"
 #include "stft.h"
 #include <assert.h>
+#include <dlfcn.h>
+#include <libgen.h>
+#include <string>
+#include <cstring>
 
 #define AUP_AED_ALIGN8(o) (((o) + 7) & (~7))
 #define AUP_AED_MAX(x, y) (((x) > (y)) ? (x) : (y))
@@ -703,7 +707,19 @@ int AUP_Aed_memAllocate(void* stPtr, const Aed_StaticCfg* pCfg) {
 
   // 3th: create aivad instance
   if (stHdl->aivadInf == NULL) {
-    stHdl->aivadInf = new AUP_MODULE_AIVAD("onnx_model/ten-vad.onnx");
+    // Find ONNX model relative to .so file location
+    Dl_info dl_info;
+    std::string model_path;
+    if (dladdr((void*)AUP_Aed_create, &dl_info) && dl_info.dli_fname) {
+      char* path_copy = strdup(dl_info.dli_fname);
+      char* dir = dirname(path_copy);
+      model_path = std::string(dir) + "/onnx_model/ten-vad.onnx";
+      free(path_copy);
+    } else {
+      // Fallback to current working directory
+      model_path = "onnx_model/ten-vad.onnx";
+    }
+    stHdl->aivadInf = new AUP_MODULE_AIVAD(model_path.c_str());
     if (stHdl->aivadInf == NULL) {
       return -1;
     }
@@ -991,3 +1007,4 @@ int AUP_Aed_proc(void* stPtr, const Aed_InputData* pIn, Aed_OutputData* pOut) {
 
   return 0;
 }
+
