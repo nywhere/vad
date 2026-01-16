@@ -719,7 +719,7 @@ int AUP_Aed_memAllocate(void* stPtr, const Aed_StaticCfg* pCfg) {
       // Fallback to current working directory
       model_path = "onnx_model/ten-vad.onnx";
     }
-    stHdl->aivadInf = new AUP_MODULE_AIVAD(model_path.c_str());
+    stHdl->aivadInf = new AUP_MODULE_AIVAD(const_cast<char*>(model_path.c_str()));
     if (stHdl->aivadInf == NULL) {
       return -1;
     }
@@ -1007,4 +1007,5 @@ int AUP_Aed_proc(void* stPtr, const Aed_InputData* pIn, Aed_OutputData* pOut) {
 
   return 0;
 }
+
 
