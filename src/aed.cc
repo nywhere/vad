@@ -713,7 +713,7 @@ int AUP_Aed_memAllocate(void* stPtr, const Aed_StaticCfg* pCfg) {
     if (dladdr((void*)AUP_Aed_create, &dl_info) && dl_info.dli_fname) {
       char* path_copy = strdup(dl_info.dli_fname);
       char* dir = dirname(path_copy);
-      model_path = std::string(dir) + "/onnx_model/ten-vad.onnx";
+      model_path = std::string(dir) + "/ten-vad.onnx";
       free(path_copy);
     } else {
       // Fallback to current working directory
@@ -1007,5 +1007,6 @@ int AUP_Aed_proc(void* stPtr, const Aed_InputData* pIn, Aed_OutputData* pOut) {
 
   return 0;
 }
+
 
 
